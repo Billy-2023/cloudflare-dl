@@ -1,0 +1,364 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>学生作业批量管理系统</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: Arial, sans-serif;
+        }
+        
+        body {
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            background: white;
+            padding: 20px;
+            border-radius: 5px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        
+        h1 {
+            text-align: center;
+            margin-bottom: 20px;
+            color: #333;
+        }
+        
+        .config-panel {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+        }
+        
+        .config-row {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 10px;
+            flex-wrap: wrap;
+        }
+        
+        .config-item {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        
+        label {
+            font-weight: bold;
+            min-width: 80px;
+        }
+        
+        input {
+            padding: 5px 10px;
+            border: 1px solid #ddd;
+            border-radius: 3px;
+            width: 80px;
+        }
+        
+        button {
+            padding: 8px 15px;
+            background: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 3px;
+            cursor: pointer;
+        }
+        
+        button:hover {
+            background: #45a049;
+        }
+        
+        .input-panel {
+            margin-bottom: 20px;
+        }
+        
+        .homework-inputs {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-top: 10px;
+        }
+        
+        .input-group {
+            margin-bottom: 10px;
+        }
+        
+        .input-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+            color: #555;
+        }
+        
+        .input-group textarea {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 3px;
+            height: 60px;
+            resize: vertical;
+        }
+        
+        .input-group input {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 3px;
+        }
+        
+        .table-container {
+            overflow-x: auto;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        
+        th, td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: center;
+        }
+        
+        th {
+            background: #4CAF50;
+            color: white;
+            position: sticky;
+            top: 0;
+        }
+        
+        .student-id {
+            background: #f8f9fa;
+            font-weight: bold;
+        }
+        
+        .status-completed {
+            background: #d4edda;
+        }
+        
+        .status-missing {
+            background: #f8d7da;
+        }
+        
+        .status-failed {
+            background: #fff3cd;
+        }
+        
+        .stats {
+            display: flex;
+            gap: 15px;
+            margin-top: 20px;
+            flex-wrap: wrap;
+        }
+        
+        .stat-item {
+            background: #f8f9fa;
+            padding: 10px 15px;
+            border-radius: 5px;
+            text-align: center;
+            flex: 1;
+            min-width: 120px;
+        }
+        
+        .stat-number {
+            font-size: 20px;
+            font-weight: bold;
+            color: #4CAF50;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>学生作业批量管理系统</h1>
+        
+        <div class="config-panel">
+            <div class="config-row">
+                <div class="config-item">
+                    <label for="homework-count">作业数:</label>
+                    <input type="number" id="homework-count" min="1" value="4">
+                </div>
+                <div class="config-item">
+                    <label for="student-count">学号数:</label>
+                    <input type="number" id="student-count" min="1" value="51">
+                </div>
+                <button onclick="generateInputs()">生成输入框</button>
+                <button onclick="updateTable()">更新表格</button>
+            </div>
+        </div>
+        
+        <div class="input-panel" id="input-panel">
+            <!-- 动态生成的输入框将放在这里 -->
+        </div>
+        
+        <div class="table-container">
+            <table id="homework-table">
+                <thead>
+                    <tr id="table-header">
+                        <th>学号</th>
+                        <!-- 作业列将通过JavaScript生成 -->
+                    </tr>
+                </thead>
+                <tbody id="table-body">
+                    <!-- 表格内容将通过JavaScript生成 -->
+                </tbody>
+            </table>
+        </div>
+        
+        <div class="stats">
+            <div class="stat-item">
+                <div class="stat-number" id="completed-count">0</div>
+                <div>已完成</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-number" id="missing-count">0</div>
+                <div>未交</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-number" id="failed-count">0</div>
+                <div>不合格</div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 全局变量
+        let homeworkData = {};
+        
+        // 页面加载时初始化
+        document.addEventListener('DOMContentLoaded', function() {
+            generateInputs();
+            updateTable();
+        });
+        
+        // 生成输入框
+        function generateInputs() {
+            const homeworkCount = parseInt(document.getElementById('homework-count').value);
+            const inputPanel = document.getElementById('input-panel');
+            
+            inputPanel.innerHTML = '';
+            
+            for (let i = 1; i <= homeworkCount; i++) {
+                const homeworkDiv = document.createElement('div');
+                homeworkDiv.className = 'homework-inputs';
+                
+                // 未交输入框
+                const missingDiv = document.createElement('div');
+                missingDiv.className = 'input-group';
+                missingDiv.innerHTML = `
+                    <label>作业${i}未交:</label>
+                    <textarea id="hw${i}-missing" placeholder="输入学号，用空格分隔（如：1 3 5 7）"></textarea>
+                `;
+                
+                // 不合格输入框
+                const failedDiv = document.createElement('div');
+                failedDiv.className = 'input-group';
+                failedDiv.innerHTML = `
+                    <label>作业${i}不合格:</label>
+                    <textarea id="hw${i}-failed" placeholder="输入学号，用空格分隔（如：2 4 6 8）"></textarea>
+                `;
+                
+                homeworkDiv.appendChild(missingDiv);
+                homeworkDiv.appendChild(failedDiv);
+                inputPanel.appendChild(homeworkDiv);
+            }
+        }
+        
+        // 解析学号输入
+        function parseStudentIds(input) {
+            if (!input.trim()) return [];
+            
+            return input.trim().split(/\s+/).map(id => {
+                const numId = parseInt(id);
+                return isNaN(numId) ? null : numId;
+            }).filter(id => id !== null);
+        }
+        
+        // 更新表格
+        function updateTable() {
+            const homeworkCount = parseInt(document.getElementById('homework-count').value);
+            const studentCount = parseInt(document.getElementById('student-count').value);
+            
+            // 解析输入数据
+            homeworkData = {};
+            
+            for (let i = 1; i <= homeworkCount; i++) {
+                const missingInput = document.getElementById(`hw${i}-missing`).value;
+                const failedInput = document.getElementById(`hw${i}-failed`).value;
+                
+                homeworkData[i] = {
+                    missing: parseStudentIds(missingInput),
+                    failed: parseStudentIds(failedInput)
+                };
+            }
+            
+            // 更新表头
+            const tableHeader = document.getElementById('table-header');
+            tableHeader.innerHTML = '<th>学号</th>';
+            
+            for (let i = 1; i <= homeworkCount; i++) {
+                const th = document.createElement('th');
+                th.textContent = `作业${i}`;
+                tableHeader.appendChild(th);
+            }
+            
+            // 更新表格内容
+            const tableBody = document.getElementById('table-body');
+            tableBody.innerHTML = '';
+            
+            let completedCount = 0;
+            let missingCount = 0;
+            let failedCount = 0;
+            
+            for (let studentId = 1; studentId <= studentCount; studentId++) {
+                const row = document.createElement('tr');
+                
+                // 学号列
+                const idCell = document.createElement('td');
+                idCell.textContent = studentId;
+                idCell.className = 'student-id';
+                row.appendChild(idCell);
+                
+                // 作业状态列
+                for (let hwId = 1; hwId <= homeworkCount; hwId++) {
+                    const cell = document.createElement('td');
+                    
+                    // 检查学生状态
+                    if (homeworkData[hwId].missing.includes(studentId)) {
+                        cell.textContent = '未交';
+                        cell.className = 'status-missing';
+                        missingCount++;
+                    } else if (homeworkData[hwId].failed.includes(studentId)) {
+                        cell.textContent = '不合格';
+                        cell.className = 'status-failed';
+                        failedCount++;
+                    } else {
+                        cell.textContent = '已完成';
+                        cell.className = 'status-completed';
+                        completedCount++;
+                    }
+                    
+                    row.appendChild(cell);
+                }
+                
+                tableBody.appendChild(row);
+            }
+            
+            // 更新统计
+            document.getElementById('completed-count').textContent = completedCount;
+            document.getElementById('missing-count').textContent = missingCount;
+            document.getElementById('failed-count').textContent = failedCount;
+        }
+    </script>
+</body>
+</html>

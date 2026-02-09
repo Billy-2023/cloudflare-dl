@@ -1,0 +1,1783 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>40班学生成绩管理系统 - V2.56R</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: '等线', 'Segoe UI', 'Microsoft YaHei', Arial, sans-serif;
+        }
+        
+        :root {
+            --primary-color: #4CAF50;
+            --secondary-color: #2196F3;
+            --accent-color: #FF9800;
+            --text-color: #333;
+            --bg-color: #f5f5f5;
+            --card-bg: #ffffff;
+            --border-color: #ddd;
+            --shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        
+        .dark-theme {
+            --primary-color: #66BB6A;
+            --secondary-color: #42A5F5;
+            --accent-color: #FFA726;
+            --text-color: #e0e0e0;
+            --bg-color: #121212;
+            --card-bg: #1e1e1e;
+            --border-color: #333;
+            --shadow: 0 4px 6px rgba(0,0,0,0.3);
+        }
+        
+        body {
+            background: var(--bg-color);
+            padding: 20px;
+            color: var(--text-color);
+            overflow-x: hidden;
+            transition: all 0.3s ease;
+        }
+        
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: var(--card-bg);
+            border-radius: 15px;
+            box-shadow: var(--shadow);
+            padding: 25px;
+            position: relative;
+            overflow: visible;
+            transition: all 0.3s ease;
+        }
+        
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid var(--border-color);
+        }
+        
+        .class-title {
+            font-size: 32px;
+            font-weight: 700;
+            color: var(--primary-color);
+        }
+        
+        .class-info {
+            font-size: 16px;
+            color: var(--text-color);
+            background: rgba(0,0,0,0.05);
+            padding: 8px 15px;
+            border-radius: 20px;
+        }
+        
+        .theme-toggle {
+            background: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: 20px;
+            padding: 8px 15px;
+            cursor: pointer;
+        }
+        
+        .exam-info {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 20px;
+            padding: 15px;
+            background: rgba(0,0,0,0.03);
+            border-radius: 8px;
+        }
+        
+        .exam-name {
+            font-size: 20px;
+            font-weight: 600;
+            color: var(--primary-color);
+        }
+        
+        .exam-input {
+            flex: 1;
+            min-width: 200px;
+            padding: 10px 15px;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            background: var(--card-bg);
+            color: var(--text-color);
+        }
+        
+        .pass-score-setting {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 20px;
+            padding: 10px 15px;
+            background: rgba(0,0,0,0.03);
+            border-radius: 8px;
+        }
+        
+        .pass-score-label {
+            font-weight: 600;
+        }
+        
+        .pass-score-input {
+            width: 60px;
+            padding: 5px 10px;
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            background: var(--card-bg);
+            color: var(--text-color);
+        }
+        
+        .controls {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+        
+        .control-btn {
+            padding: 10px 15px;
+            background: var(--secondary-color);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+        }
+        
+        .table-container {
+            width: 100%;
+            overflow-x: auto;
+            margin-bottom: 25px;
+            border-radius: 8px;
+            border: 1px solid var(--border-color);
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            min-width: 600px;
+        }
+        
+        th, td {
+            border: 1px solid var(--border-color);
+            padding: 12px 8px;
+            text-align: center;
+        }
+        
+        th {
+            background: rgba(0,0,0,0.05);
+            font-weight: 600;
+            position: sticky;
+            left: 0;
+        }
+        
+        tr:nth-child(even) {
+            background-color: rgba(0,0,0,0.02);
+        }
+        
+        .student-id {
+            font-weight: 600;
+            background: rgba(0,0,0,0.03);
+            position: sticky;
+            left: 0;
+        }
+        
+        .score {
+            font-weight: bold;
+            position: relative;
+            min-width: 80px;
+        }
+        
+        .highlight {
+            background-color: #ffff99 !important;
+            transition: background-color 0.5s;
+            animation: highlightPulse 1s ease;
+        }
+        
+        @keyframes highlightPulse {
+            0% { background-color: #ffff99; }
+            50% { background-color: #ffeb3b; }
+            100% { background-color: #ffff99; }
+        }
+        
+        .permanent-highlight {
+            background: linear-gradient(45deg, #fff9c4, #fff59d) !important;
+            box-shadow: inset 0 0 0 2px #ffd54f;
+            position: relative;
+            animation: glow 2s infinite alternate;
+        }
+        
+        @keyframes glow {
+            from { box-shadow: inset 0 0 0 2px #ffd54f, 0 0 10px rgba(255, 213, 79, 0.5); }
+            to { box-shadow: inset 0 0 0 2px #ffd54f, 0 0 20px rgba(255, 213, 79, 0.8); }
+        }
+        
+        .not-submitted {
+            color: #f44336;
+            font-weight: bold;
+            background: linear-gradient(45deg, #ffcdd2, #ffebee);
+            border-radius: 4px;
+            animation: pulse 1.5s infinite;
+            position: relative;
+        }
+        
+        .not-submitted::after {
+            content: "❌❌";
+            margin-left: 5px;
+            animation: spin 1s infinite;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        .pass {
+            color: #4CAF50;
+        }
+        
+        .fail {
+            color: #F44336;
+        }
+        
+        .stats-panel {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+        
+        .stat-card {
+            background: var(--card-bg);
+            border-radius: 8px;
+            padding: 15px;
+            box-shadow: var(--shadow);
+            text-align: center;
+        }
+        
+        .stat-value {
+            font-size: 24px;
+            font-weight: bold;
+            color: var(--primary-color);
+            margin: 10px 0;
+        }
+        
+        .chart-container {
+            background: var(--card-bg);
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 20px;
+            box-shadow: var(--shadow);
+        }
+        
+        .chart-title {
+            font-weight: 600;
+            margin-bottom: 15px;
+            text-align: center;
+        }
+        
+        .chart {
+            height: 200px;
+            display: flex;
+            align-items: flex-end;
+            justify-content: space-around;
+            padding: 0 10px;
+        }
+        
+        .chart-bar {
+            width: 40px;
+            background: var(--primary-color);
+            border-radius: 4px 4px 0 0;
+            position: relative;
+            transition: height 0.5s ease;
+        }
+        
+        .chart-bar-label {
+            position: absolute;
+            bottom: -25px;
+            left: 0;
+            width: 100%;
+            text-align: center;
+            font-size: 12px;
+        }
+        
+        .chart-bar-value {
+            position: absolute;
+            top: -20px;
+            left: 0;
+            width: 100%;
+            text-align: center;
+            font-size: 12px;
+            font-weight: bold;
+        }
+        
+        .input-section {
+            background: var(--card-bg);
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: var(--shadow);
+        }
+        
+        .input-title {
+            font-size: 20px;
+            font-weight: 600;
+            margin-bottom: 15px;
+            color: var(--primary-color);
+        }
+        
+        .input-container {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+        
+        #scoreInput {
+            flex: 1;
+            padding: 12px 15px;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            background: var(--card-bg);
+            color: var(--text-color);
+        }
+        
+        #addScore {
+            padding: 12px 25px;
+            background: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+        }
+        
+        .batch-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 15px;
+            flex-wrap: wrap;
+        }
+        
+        .batch-input {
+            flex: 1;
+            min-width: 200px;
+            padding: 10px 15px;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            background: var(--card-bg);
+            color: var(--text-color);
+        }
+        
+        .batch-btn {
+            padding: 10px 15px;
+            background: var(--accent-color);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+        }
+        
+        .instructions {
+            margin-top: 10px;
+            font-size: 14px;
+            color: var(--text-color);
+        }
+        
+        .examples {
+            display: flex;
+            gap: 10px;
+            margin: 10px 0;
+            flex-wrap: wrap;
+        }
+        
+        .example {
+            background: rgba(0,0,0,0.05);
+            padding: 8px 12px;
+            border-radius: 6px;
+            font-size: 13px;
+        }
+        
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .modal-content {
+            background: var(--card-bg);
+            border-radius: 8px;
+            padding: 20px;
+            width: 90%;
+            max-width: 500px;
+            box-shadow: var(--shadow);
+        }
+        
+        .modal-title {
+            font-weight: 600;
+            margin-bottom: 15px;
+        }
+        
+        .modal-actions {
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+            margin-top: 20px;
+        }
+        
+        .btn {
+            padding: 8px 15px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        
+        .btn-primary {
+            background: var(--primary-color);
+            color: white;
+        }
+        
+        .btn-secondary {
+            background: var(--border-color);
+            color: var(--text-color);
+        }
+        
+        .backup-notice {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: var(--accent-color);
+            color: white;
+            padding: 10px 15px;
+            border-radius: 5px;
+            box-shadow: var(--shadow);
+            display: none;
+            z-index: 100;
+        }
+        
+        .ranking-container {
+            background: var(--card-bg);
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: var(--shadow);
+            display: none;
+        }
+        
+        .ranking-title {
+            font-size: 24px;
+            font-weight: 600;
+            margin-bottom: 15px;
+            text-align: center;
+            color: var(--primary-color);
+        }
+        
+        .ranking-info {
+            text-align: center;
+            margin-bottom: 15px;
+            color: var(--text-color);
+        }
+        
+        .ranking-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+        }
+        
+        .ranking-table th {
+            background: var(--primary-color);
+            color: white;
+            padding: 12px 8px;
+            text-align: center;
+            position: sticky;
+            top: 0;
+        }
+        
+        .ranking-table td {
+            padding: 10px 8px;
+            text-align: center;
+            border-bottom: 1px solid var(--border-color);
+        }
+        
+        .ranking-table tr:nth-child(even) {
+            background: rgba(0,0,0,0.03);
+        }
+        
+        .ranking-table tr:hover {
+            background: rgba(0,0,0,0.05);
+        }
+        
+        .ranking-rank {
+            font-weight: bold;
+            color: var(--primary-color);
+        }
+        
+        .ranking-score {
+            font-weight: bold;
+        }
+        
+        .same-rank {
+            background: rgba(76, 175, 80, 0.1) !important;
+        }
+        
+        .medal-gold {
+            color: #FFD700;
+            font-weight: bold;
+        }
+        
+        .medal-silver {
+            color: #C0C0C0;
+            font-weight: bold;
+        }
+        
+        .medal-bronze {
+            color: #CD7F32;
+            font-weight: bold;
+        }
+        
+        .close-ranking {
+            display: block;
+            margin: 20px auto 0;
+            padding: 8px 20px;
+            background: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        
+        /* 使用说明样式 */
+        .user-manual {
+            background: var(--card-bg);
+            border-radius: 8px;
+            padding: 25px;
+            margin-top: 20px;
+            box-shadow: var(--shadow);
+            font-family: '仿宋', 'FangSong', serif;
+            line-height: 1.8;
+        }
+        
+        .manual-title {
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--primary-color);
+            margin-bottom: 20px;
+            text-align: center;
+            border-bottom: 2px solid var(--border-color);
+            padding-bottom: 10px;
+        }
+        
+        .manual-section {
+            margin-bottom: 25px;
+        }
+        
+        .section-title {
+            font-size: 20px;
+            font-weight: 600;
+            color: var(--secondary-color);
+            margin-bottom: 10px;
+            border-left: 4px solid var(--accent-color);
+            padding-left: 10px;
+        }
+        
+        .manual-content {
+            font-size: 16px;
+            text-align: justify;
+            margin-bottom: 15px;
+        }
+        
+        .manual-list {
+            padding-left: 25px;
+            margin-bottom: 15px;
+        }
+        
+        .manual-list li {
+            margin-bottom: 8px;
+        }
+        
+        .manual-note {
+            background: rgba(255, 152, 0, 0.1);
+            border-left: 4px solid var(--accent-color);
+            padding: 12px 15px;
+            margin: 15px 0;
+            border-radius: 0 5px 5px 0;
+        }
+        
+        @media (max-width: 768px) {
+            .header {
+                flex-direction: column;
+                gap: 15px;
+                align-items: flex-start;
+            }
+            
+            .class-title {
+                font-size: 24px;
+            }
+            
+            .controls {
+                flex-direction: column;
+            }
+            
+            .input-container {
+                flex-direction: column;
+            }
+            
+            .batch-actions {
+                flex-direction: column;
+            }
+            
+            .stats-panel {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            
+            .user-manual {
+                padding: 15px;
+            }
+            
+            .manual-title {
+                font-size: 20px;
+            }
+            
+            .section-title {
+                font-size: 18px;
+            }
+            
+            .manual-content {
+                font-size: 14px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div>
+                <div class="class-title">40班学生成绩管理系统</div>
+                <div class="class-info">共51名学生</div>
+            </div>
+            <button class="theme-toggle" id="themeToggle">🌙🌙 暗色模式</button>
+        </div>
+        
+        <div class="exam-info">
+            <span class="exam-name" id="examNameDisplay">未命名考试</span>
+            <input type="text" class="exam-input" id="examNameInput" placeholder="输入考试名称，如：期中考试、单元测试等">
+            <button class="batch-btn" id="saveExamName">保存考试名称</button>
+        </div>
+        
+        <div class="pass-score-setting">
+            <span class="pass-score-label">及格分数设置：</span>
+            <input type="number" class="pass-score-input" id="passScoreInput" min="0" max="150" value="60">
+            <span>分</span>
+            <button class="batch-btn" id="savePassScore">保存设置</button>
+        </div>
+        
+        <div class="controls">
+            <button class="control-btn" id="showStats">📊📊 成绩统计</button>
+            <button class="control-btn" id="showChart">📈📈 成绩分布</button>
+            <button class="control-btn" id="showRankingBtn">🏆🏆 成绩排行榜</button>
+            <button class="control-btn" id="exportData">💾💾 导出JSON</button>
+            <button class="control-btn" id="importData">📤📤 导入数据</button>
+            <button class="control-btn" id="toggleSpeech">🔊🔊 关闭朗读</button>
+        </div>
+        
+        <div class="stats-panel" id="statsPanel" style="display: none;">
+            <div class="stat-card">
+                <div>平均分</div>
+                <div class="stat-value" id="avgScore">0</div>
+                <div>全班平均成绩</div>
+            </div>
+            <div class="stat-card">
+                <div>最高分</div>
+                <div class="stat-value" id="maxScore">0</div>
+                <div>班级最高成绩</div>
+            </div>
+            <div class="stat-card">
+                <div>最低分</div>
+                <div class="stat-value" id="minScore">0</div>
+                <div>班级最低成绩</div>
+            </div>
+            <div class="stat-card">
+                <div>及格率</div>
+                <div class="stat-value" id="passRate">0%</div>
+                <div id="passRateDesc">60分以上比例</div>
+            </div>
+        </div>
+        
+        <div class="chart-container" id="chartContainer" style="display: none;">
+            <div class="chart-title">成绩分布图</div>
+            <div class="chart" id="scoreChart">
+                <!-- 图表将通过JavaScript动态生成 -->
+            </div>
+        </div>
+        
+        <div class="ranking-container" id="rankingContainer">
+            <div class="ranking-title">🎯🎯 成绩排行榜 - <span id="rankingExamName">未命名考试</span></div>
+            <div class="ranking-info" id="rankingInfo">共 <span id="rankingCount">0</span> 名学生有成绩</div>
+            <table class="ranking-table">
+                <thead>
+                    <tr>
+                        <th>名次</th>
+                        <th>姓名</th>
+                        <th>学号</th>
+                        <th>分数</th>
+                        <th>状态</th>
+                    </tr>
+                </thead>
+                <tbody id="rankingBody">
+                    <!-- 排行榜内容将通过JavaScript动态生成 -->
+                </tbody>
+            </table>
+            <button class="close-ranking" id="closeRanking">隐藏排行榜</button>
+        </div>
+        
+        <div class="table-container">
+            <table>
+                <thead>
+                    <tr>
+                        <th>姓名</th>
+                        <th>学号</th>
+                        <th>成绩</th>
+                        <th>姓名</th>
+                        <th>学号</th>
+                        <th>成绩</th>
+                        <th>姓名</th>
+                        <th>学号</th>
+                        <th>成绩</th>
+                    </tr>
+                </thead>
+                <tbody id="scoreTable">
+                    <!-- 表格内容将通过JavaScript动态生成 -->
+                </tbody>
+            </table>
+        </div>
+        
+        <div class="input-section">
+            <div class="input-title">成绩录入</div>
+            <div class="input-container">
+                <input type="text" id="scoreInput" placeholder="输入格式：学号+分数，如：0170 或 34100 或 587.5">
+                <button id="addScore">录入成绩</button>
+            </div>
+            
+            <div class="batch-actions">
+                <input type="text" class="batch-input" id="batchScores" placeholder="批量输入：学号:分数，用逗号分隔，如：1:85,2:90,3:77.5">
+                <button class="batch-btn" id="batchAdd">批量录入</button>
+                <input type="text" class="batch-input" id="highlightStudents" placeholder="批量高亮学号，用逗号分隔，如：1,5,10,15">
+                <button class="batch-btn" id="batchHighlight">批量永久高亮</button>
+                <button class="batch-btn" id="clearHighlights">清除高亮</button>
+            </div>
+            
+            <div class="instructions">
+                <p>输入说明：</p>
+                <div class="examples">
+                    <div class="example">0170 → 1号得70分</div>
+                    <div class="example">34100 → 34号得100分</div>
+                    <div class="example">587.5 → 5号得87.5分</div>
+                    <div class="example">NO 12 → 12号学生标记为未交(X)</div>
+                    <div class="example">pb → 显示成绩排行榜</div>
+                    <div class="example">color 5 → 5号学生永久高亮</div>
+                </div>
+                <p style="margin-top: 10px;">支持批量输入，用空格或逗号分隔：<strong>0170 34100 587.5</strong></p>
+            </div>
+        </div>
+        
+        <!-- 使用说明部分 -->
+        <div class="user-manual">
+            <div class="manual-title">📚 40班学生成绩管理系统使用说明</div>
+            
+            <div class="manual-section">
+                <div class="section-title">一、系统概述</div>
+                <div class="manual-content">
+                    本系统专为40班学生成绩管理而设计，支持51名学生的成绩录入、统计、分析和可视化功能。系统采用本地存储技术，确保数据安全，同时提供便捷的操作界面和丰富的功能选项，满足日常教学管理需求。
+                </div>
+            </div>
+            
+            <div class="manual-section">
+                <div class="section-title">二、基本操作指南</div>
+                <div class="manual-content">
+                    <strong>1. 考试名称设置</strong><br>
+                    在"考试名称"输入框中输入本次考试的名称（如：期中考试、单元测试等），点击"保存考试名称"按钮即可保存。
+                </div>
+                <div class="manual-content">
+                    <strong>2. 及格分数设置</strong><br>
+                    在"及格分数设置"区域输入及格分数线（0-150分），点击"保存设置"按钮即可生效。系统将根据此分数自动判断学生成绩是否及格。
+                </div>
+                <div class="manual-content">
+                    <strong>3. 单个成绩录入</strong><br>
+                    在"成绩录入"区域的输入框中，按照"学号+分数"的格式输入，例如：
+                    <ul class="manual-list">
+                        <li><strong>0170</strong> → 1号学生得70分</li>
+                        <li><strong>34100</strong> → 34号学生得100分</li>
+                        <li><strong>587.5</strong> → 5号学生得87.5分</li>
+                    </ul>
+                    输入完成后点击"录入成绩"按钮或按Enter键确认。
+                </div>
+                <div class="manual-content">
+                    <strong>4. 批量成绩录入</strong><br>
+                    在"批量输入"框中，按照"学号:分数"的格式输入多个成绩，用逗号分隔，例如：<strong>1:85,2:90,3:77.5</strong>，然后点击"批量录入"按钮。
+                </div>
+                <div class="manual-content">
+                    <strong>5. 特殊功能命令</strong><br>
+                    在成绩录入框中输入以下特殊命令可实现相应功能：
+                    <ul class="manual-list">
+                        <li><strong>NO 学号</strong> → 标记该学生未交卷（如：NO 12）</li>
+                        <li><strong>color 学号</strong> → 为该学生设置永久高亮（如：color 5）</li>
+                        <li><strong>dcolor 学号</strong> → 取消该学生的永久高亮</li>
+                        <li><strong>pb</strong> → 显示成绩排行榜</li>
+                        <li><strong>clear</strong> → 清空所有成绩（谨慎使用）</li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="manual-section">
+                <div class="section-title">三、数据统计与分析</div>
+                <div class="manual-content">
+                    <strong>1. 成绩统计</strong><br>
+                    点击"成绩统计"按钮，系统将显示本次考试的平均分、最高分、最低分和及格率等关键统计数据。
+                </div>
+                <div class="manual-content">
+                    <strong>2. 成绩分布图</strong><br>
+                    点击"成绩分布"按钮，系统将生成成绩分布柱状图，直观展示各分数段的学生人数分布情况。
+                </div>
+                <div class="manual-content">
+                    <strong>3. 成绩排行榜</strong><br>
+                    点击"成绩排行榜"按钮或在成绩录入框中输入"pb"命令，系统将显示学生成绩排名，前三名将获得金、银、铜牌标识。
+                </div>
+            </div>
+            
+            <div class="manual-section">
+                <div class="section-title">四、数据管理功能</div>
+                <div class="manual-content">
+                    <strong>1. 数据导出</strong><br>
+                    点击"导出JSON"按钮，系统将当前所有数据（包括成绩、考试名称、及格分数等）导出为JSON格式文件，便于备份或迁移。
+                </div>
+                <div class="manual-content">
+                    <strong>2. 数据导入</strong><br>
+                    点击"导入数据"按钮，选择之前导出的JSON文件，系统将恢复所有数据设置。
+                </div>
+                <div class="manual-content">
+                    <strong>3. 永久高亮管理</strong><br>
+                    在"批量高亮学号"框中输入学号（用逗号分隔），点击"批量永久高亮"可为多个学生设置永久高亮；点击"清除高亮"可清除所有永久高亮设置。
+                </div>
+            </div>
+            
+            <div class="manual-section">
+                <div class="section-title">五、个性化设置</div>
+                <div class="manual-content">
+                    <strong>1. 主题切换</strong><br>
+                    点击右上角的"暗色模式/亮色模式"按钮，可在深色和浅色主题之间切换，适应不同光线环境。
+                </div>
+                <div class="manual-content">
+                    <strong>2. 语音朗读</strong><br>
+                    系统默认开启语音朗读功能，每次录入成绩时会朗读学生姓名和分数。点击"关闭朗读"按钮可关闭此功能，再次点击可重新开启。
+                </div>
+            </div>
+            
+            <div class="manual-section">
+                <div class="section-title">六、注意事项</div>
+                <div class="manual-content">
+                    <ul class="manual-list">
+                        <li>系统使用浏览器本地存储技术，数据保存在当前设备中，请定期使用"导出JSON"功能备份数据。</li>
+                        <li>清空浏览器缓存可能导致数据丢失，请务必提前备份重要数据。</li>
+                        <li>系统支持0-150分的成绩录入，支持小数（如87.5）。</li>
+                        <li>标记为"未交"的学生成绩将不计入统计和排名。</li>
+                        <li>系统每5分钟会显示备份提醒，建议及时备份数据。</li>
+                        <li>在移动设备上使用时，部分界面布局会自适应调整，确保最佳显示效果。</li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="manual-note">
+                💡 <strong>提示：</strong> 本系统完全在浏览器端运行，无需网络连接即可使用。所有数据均保存在本地，确保隐私安全。建议在使用前先设置考试名称和及格分数，再进行成绩录入操作。
+            </div>
+        </div>
+    </div>
+    
+    <div class="modal" id="importModal">
+        <div class="modal-content">
+            <div class="modal-title">导入数据</div>
+            <p>请选择要导入的数据文件（JSON格式）：</p>
+            <input type="file" id="fileInput" accept=".json" style="margin: 15px 0; width: 100%;">
+            <div class="modal-actions">
+                <button class="btn btn-secondary" id="cancelImport">取消</button>
+                <button class="btn btn-primary" id="confirmImport">导入</button>
+            </div>
+        </div>
+    </div>
+    
+    <div class="backup-notice" id="backupNotice">
+        💡💡 记得定期备份您的数据！
+    </div>
+
+    <script>
+        // 学生数据
+        const studentData = {
+            1: { name: "高瑞辰" },
+            2: { name: "沈学增" },
+            3: { name: "魏瑀彤" },
+            4: { name: "高铎心" },
+            5: { name: "王麒硕" },
+            6: { name: "廉鸿敬楠" },
+            7: { name: "刘嘉锌" },
+            8: { name: "冷祥赫" },
+            9: { name: "张念竹" },
+            10: { name: "李子墨" },
+            11: { name: "孙晨瑞" },
+            12: { name: "郑雅兮" },
+            13: { name: "周禹辰" },
+            14: { name: "陆盈心" },
+            15: { name: "吕金洋" },
+            16: { name: "张圣艺" },
+            17: { name: "梁荷欣" },
+            18: { name: "玉钶凡" },
+            19: { name: "吴东晓" },
+            20: { name: "刘韵麒" },
+            21: { name: "郭星乐" },
+            22: { name: "张皓博" },
+            23: { name: "王昱瞳" },
+            24: { name: "孙若出" },
+            25: { name: "方圣博" },
+            26: { name: "刘哲宇" },
+            27: { name: "王楚菡" },
+            28: { name: "邢韵" },
+            29: { name: "郑皓" },
+            30: { name: "贾御敬佳" },
+            31: { name: "白梓辰" },
+            32: { name: "王思涵" },
+            33: { name: "魏祎辰" },
+            34: { name: "高源作" },
+            35: { name: "孙静汐" },
+            36: { name: "刘映希" },
+            37: { name: "赵浩淳" },
+            38: { name: "何卓阳" },
+            39: { name: "杨雪吟" },
+            40: { name: "郑岚曦" },
+            41: { name: "路栩骄" },
+            42: { name: "冯天越" },
+            43: { name: "辛沐霖" },
+            44: { name: "韩翘屹" },
+            45: { name: "吴佳美汐" },
+            46: { name: "高畅" },
+            47: { name: "黄子洵" },
+            48: { name: "刘潆禧" },
+            49: { name: "王思博【男A】" },
+            50: { name: "王思博【女B】" },
+            51: { name: "王韦涵" }
+        };
+
+        // 全局变量
+        let scores = {};
+        let isDarkTheme = false;
+        let passScore = 60;
+        let examName = "未命名考试";
+        let permanentHighlights = {};
+        let isSpeechEnabled = true;
+        let speechQueue = [];
+        let isSpeaking = false;
+
+        document.addEventListener('DOMContentLoaded', function() {
+            initializeTable();
+            loadFromLocalStorage();
+            updateStats();
+            bindEvents();
+            setInterval(showBackupNotice, 5 * 60 * 1000);
+        });
+        
+        function initializeTable() {
+            const tableBody = document.getElementById('scoreTable');
+            tableBody.innerHTML = '';
+            
+            for (let i = 1; i <= 51; i += 3) {
+                const row = document.createElement('tr');
+                
+                for (let j = 0; j < 3; j++) {
+                    const studentId = i + j;
+                    if (studentId > 51) {
+                        for (let k = j; k < 3; k++) {
+                            const emptyCell1 = document.createElement('td');
+                            const emptyCell2 = document.createElement('td');
+                            const emptyCell3 = document.createElement('td');
+                            row.appendChild(emptyCell1);
+                            row.appendChild(emptyCell2);
+                            row.appendChild(emptyCell3);
+                        }
+                        break;
+                    }
+                    
+                    const student = studentData[studentId];
+                    
+                    const nameCell = document.createElement('td');
+                    nameCell.textContent = student.name;
+                    
+                    const idCell = document.createElement('td');
+                    idCell.textContent = studentId;
+                    
+                    const scoreCell = document.createElement('td');
+                    scoreCell.className = 'score';
+                    scoreCell.setAttribute('data-id', studentId);
+                    const score = scores[studentId] || '';
+                    scoreCell.textContent = score;
+                    
+                    if (score !== '' && score !== 'X') {
+                        const scoreValue = parseFloat(score);
+                        if (!isNaN(scoreValue)) {
+                            scoreCell.classList.add(scoreValue >= passScore ? 'pass' : 'fail');
+                        }
+                    } else if (score === 'X') {
+                        scoreCell.classList.add('not-submitted');
+                    }
+                    
+                    if (permanentHighlights[studentId]) {
+                        scoreCell.classList.add('permanent-highlight');
+                    }
+                    
+                    row.appendChild(nameCell);
+                    row.appendChild(idCell);
+                    row.appendChild(scoreCell);
+                }
+                
+                tableBody.appendChild(row);
+            }
+        }
+        
+        function bindEvents() {
+            document.getElementById('themeToggle').addEventListener('click', toggleTheme);
+            document.getElementById('saveExamName').addEventListener('click', saveExamName);
+            document.getElementById('examNameInput').addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') saveExamName();
+            });
+            document.getElementById('savePassScore').addEventListener('click', savePassScore);
+            document.getElementById('passScoreInput').addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') savePassScore();
+            });
+            document.getElementById('addScore').addEventListener('click', addScore);
+            document.getElementById('scoreInput').addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') addScore();
+            });
+            document.getElementById('batchAdd').addEventListener('click', batchAddScores);
+            document.getElementById('batchHighlight').addEventListener('click', batchPermanentHighlight);
+            document.getElementById('clearHighlights').addEventListener('click', clearPermanentHighlights);
+            document.getElementById('exportData').addEventListener('click', exportData);
+            document.getElementById('importData').addEventListener('click', showImportModal);
+            document.getElementById('showStats').addEventListener('click', toggleStats);
+            document.getElementById('showChart').addEventListener('click', toggleChart);
+            document.getElementById('showRankingBtn').addEventListener('click', toggleRanking);
+            document.getElementById('closeRanking').addEventListener('click', function() {
+                document.getElementById('rankingContainer').style.display = 'none';
+            });
+            document.getElementById('cancelImport').addEventListener('click', hideImportModal);
+            document.getElementById('confirmImport').addEventListener('click', importData);
+            document.getElementById('backupNotice').addEventListener('click', function() {
+                this.style.display = 'none';
+            });
+            document.getElementById('toggleSpeech').addEventListener('click', toggleSpeech);
+        }
+        
+        function saveExamName() {
+            const newExamName = document.getElementById('examNameInput').value.trim();
+            if (newExamName) {
+                examName = newExamName;
+                document.getElementById('examNameDisplay').textContent = examName;
+                document.getElementById('examNameInput').value = '';
+                saveToLocalStorage();
+                alert(`考试名称已设置为：${examName}`);
+            } else {
+                alert('请输入有效的考试名称');
+            }
+        }
+        
+        function savePassScore() {
+            const newPassScore = parseInt(document.getElementById('passScoreInput').value);
+            
+            if (isNaN(newPassScore) || newPassScore < 0 || newPassScore > 150) {
+                alert('请输入0-150之间的有效分数！');
+                return;
+            }
+            
+            passScore = newPassScore;
+            updatePassScoreDisplay();
+            updateStats();
+            initializeTable();
+            saveToLocalStorage();
+            alert(`及格分数已设置为 ${passScore} 分`);
+        }
+        
+        function updatePassScoreDisplay() {
+            document.getElementById('passRateDesc').textContent = `${passScore}分以上比例`;
+        }
+        
+        function addScore() {
+            const input = document.getElementById('scoreInput').value.trim();
+            if (!input) return;
+            
+            if (input.toLowerCase() === 'clear') {
+                clearAllScores();
+                document.getElementById('scoreInput').value = '';
+                return;
+            }
+            
+            if (input.toLowerCase() === 'pb') {
+                toggleRanking();
+                document.getElementById('scoreInput').value = '';
+                return;
+            }
+            
+            if (input.toUpperCase().startsWith('NO ')) {
+                const studentId = parseInt(input.substring(3));
+                markAsNotSubmitted(studentId);
+                document.getElementById('scoreInput').value = '';
+                return;
+            }
+            
+            if (input.toLowerCase().startsWith('color ')) {
+                const studentId = parseInt(input.substring(6));
+                togglePermanentHighlight(studentId);
+                document.getElementById('scoreInput').value = '';
+                return;
+            }
+            
+            if (input.toLowerCase().startsWith('dcolor ')) {
+                const studentId = parseInt(input.substring(7));
+                removePermanentHighlight(studentId);
+                document.getElementById('scoreInput').value = '';
+                return;
+            }
+            
+            const entries = input.split(/[\s,]+/);
+            
+            entries.forEach(entry => {
+                if (!entry) return;
+                
+                let studentId, score;
+                
+                if (entry.length <= 2) {
+                    studentId = getNextEmptyStudent();
+                    score = parseFloat(entry);
+                } else {
+                    let idStr = '';
+                    let scoreStr = '';
+                    
+                    for (let i = 0; i < entry.length; i++) {
+                        if (!isNaN(parseInt(entry[i])) || entry[i] === '.') {
+                            idStr += entry[i];
+                        } else {
+                            scoreStr = entry.substring(i);
+                            break;
+                        }
+                    }
+                    
+                    if (!scoreStr) {
+                        if (entry.length > 2) {
+                            const possibleId = parseInt(entry.substring(0, 2));
+                            if (possibleId >= 1 && possibleId <= 51) {
+                                studentId = possibleId;
+                                score = parseFloat(entry.substring(2));
+                            } else {
+                                studentId = parseInt(entry.substring(0, 1));
+                                score = parseFloat(entry.substring(1));
+                            }
+                        } else {
+                            studentId = parseInt(entry.substring(0, 1));
+                            score = parseFloat(entry.substring(1));
+                        }
+                    } else {
+                        studentId = parseInt(idStr);
+                        score = parseFloat(scoreStr);
+                    }
+                }
+                
+                if (isNaN(studentId) || studentId < 1 || studentId > 51) {
+                    alert(`无效的学号: ${studentId}。学号应为1-51之间的数字。`);
+                    return;
+                }
+                
+                if (isNaN(score) || score < 0 || score > 150) {
+                    alert(`无效的分数: ${score}。分数应为0-150之间的数字。`);
+                    return;
+                }
+                
+                updateScore(studentId, score);
+                if (isSpeechEnabled) {
+                    const studentName = studentData[studentId].name;
+                    addToSpeechQueue(`${studentName} ${score}分`);
+                }
+            });
+            
+            document.getElementById('scoreInput').value = '';
+            document.getElementById('scoreInput').focus();
+            updateStats();
+            updateChart();
+            saveToLocalStorage();
+        }
+        
+        function addToSpeechQueue(text) {
+            speechQueue.push(text);
+            if (!isSpeaking) {
+                processSpeechQueue();
+            }
+        }
+        
+        function processSpeechQueue() {
+            if (speechQueue.length === 0) {
+                isSpeaking = false;
+                return;
+            }
+            
+            isSpeaking = true;
+            const text = speechQueue.shift();
+            const utterance = new SpeechSynthesisUtterance(text);
+            utterance.lang = 'zh-CN';
+            utterance.rate = 1.0;
+            utterance.pitch = 1.0;
+            
+            utterance.onend = function() {
+                setTimeout(processSpeechQueue, 500); // 添加500ms间隔
+            };
+            
+            window.speechSynthesis.speak(utterance);
+        }
+        
+        function toggleSpeech() {
+            isSpeechEnabled = !isSpeechEnabled;
+            const btn = document.getElementById('toggleSpeech');
+            btn.textContent = isSpeechEnabled ? '🔊🔊 关闭朗读' : '🔈🔈 开启朗读';
+            saveToLocalStorage();
+        }
+        
+        function markAsNotSubmitted(studentId) {
+            if (isNaN(studentId) || studentId < 1 || studentId > 51) {
+                alert(`无效的学号: ${studentId}。学号应为1-51之间的数字。`);
+                return;
+            }
+            
+            const scoreCell = document.querySelector(`.score[data-id="${studentId}"]`);
+            if (scoreCell) {
+                scoreCell.textContent = 'X';
+                scoreCell.classList.add('not-submitted');
+                scoreCell.classList.remove('pass', 'fail');
+                
+                scoreCell.classList.add('highlight');
+                setTimeout(() => {
+                    scoreCell.classList.remove('highlight');
+                }, 1000);
+                
+                scores[studentId] = 'X';
+                saveToLocalStorage();
+                alert(`${studentId}号学生已标记为未交`);
+            }
+        }
+        
+        function togglePermanentHighlight(studentId) {
+            if (isNaN(studentId) || studentId < 1 || studentId > 51) {
+                alert(`无效的学号: ${studentId}。学号应为1-51之间的数字。`);
+                return;
+            }
+            
+            const scoreCell = document.querySelector(`.score[data-id="${studentId}"]`);
+            if (scoreCell) {
+                if (permanentHighlights[studentId]) {
+                    scoreCell.classList.remove('permanent-highlight');
+                    permanentHighlights[studentId] = false;
+                    alert(`已取消 ${studentId} 号学生的永久高亮`);
+                } else {
+                    scoreCell.classList.add('permanent-highlight');
+                    permanentHighlights[studentId] = true;
+                    alert(`已永久高亮 ${studentId} 号学生`);
+                }
+                saveToLocalStorage();
+            }
+        }
+        
+        function removePermanentHighlight(studentId) {
+            if (isNaN(studentId) || studentId < 1 || studentId > 51) {
+                alert(`无效的学号: ${studentId}。学号应为1-51之间的数字。`);
+                return;
+            }
+            
+            const scoreCell = document.querySelector(`.score[data-id="${studentId}"]`);
+            if (scoreCell) {
+                scoreCell.classList.remove('permanent-highlight');
+                permanentHighlights[studentId] = false;
+                saveToLocalStorage();
+                alert(`已移除 ${studentId} 号学生的永久高亮`);
+            }
+        }
+        
+        function batchPermanentHighlight() {
+            const input = document.getElementById('highlightStudents').value.trim();
+            if (!input) return;
+            
+            const studentIds = input.split(',').map(id => parseInt(id.trim()));
+            let successCount = 0;
+            
+            studentIds.forEach(studentId => {
+                if (isNaN(studentId) || studentId < 1 || studentId > 51) return;
+                
+                const scoreCell = document.querySelector(`.score[data-id="${studentId}"]`);
+                if (scoreCell) {
+                    scoreCell.classList.add('permanent-highlight');
+                    permanentHighlights[studentId] = true;
+                    successCount++;
+                }
+            });
+            
+            alert(`成功为 ${successCount} 名学生设置永久高亮`);
+            document.getElementById('highlightStudents').value = '';
+            saveToLocalStorage();
+        }
+        
+        function clearPermanentHighlights() {
+            const scoreCells = document.querySelectorAll('.score');
+            scoreCells.forEach(cell => {
+                cell.classList.remove('permanent-highlight');
+            });
+            permanentHighlights = {};
+            saveToLocalStorage();
+            alert('已清除所有永久高亮');
+        }
+        
+        function batchAddScores() {
+            const input = document.getElementById('batchScores').value.trim();
+            if (!input) return;
+            
+            const entries = input.split(',');
+            let successCount = 0;
+            
+            entries.forEach(entry => {
+                const parts = entry.split(':');
+                if (parts.length !== 2) return;
+                
+                const studentId = parseInt(parts[0].trim());
+                const score = parseFloat(parts[1].trim());
+                
+                if (isNaN(studentId) || studentId < 1 || studentId > 51) return;
+                if (isNaN(score) || score < 0 || score > 150) return;
+                
+                updateScore(studentId, score);
+                if (isSpeechEnabled) {
+                    const studentName = studentData[studentId].name;
+                    addToSpeechQueue(`${studentName} ${score}分`);
+                }
+                successCount++;
+            });
+            
+            alert(`成功添加 ${successCount} 个成绩`);
+            document.getElementById('batchScores').value = '';
+            updateStats();
+            updateChart();
+            saveToLocalStorage();
+        }
+        
+        function updateScore(studentId, score) {
+            scores[studentId] = score;
+            
+            const scoreCell = document.querySelector(`.score[data-id="${studentId}"]`);
+            if (scoreCell) {
+                scoreCell.textContent = score % 1 === 0 ? score : score.toFixed(1);
+                scoreCell.classList.remove('not-submitted');
+                
+                scoreCell.classList.remove('pass', 'fail');
+                if (score >= passScore) {
+                    scoreCell.classList.add('pass');
+                } else {
+                    scoreCell.classList.add('fail');
+                }
+                
+                scoreCell.classList.add('highlight');
+                setTimeout(() => {
+                    scoreCell.classList.remove('highlight');
+                }, 1000);
+            }
+        }
+        
+        function clearAllScores() {
+            if (confirm('确定要清空所有成绩并重置考试名称吗？此操作不可撤销。')) {
+                scores = {};
+                examName = "未命名考试";
+                permanentHighlights = {};
+                
+                document.getElementById('examNameDisplay').textContent = examName;
+                
+                const scoreCells = document.querySelectorAll('.score');
+                scoreCells.forEach(cell => {
+                    cell.textContent = '';
+                    cell.classList.remove('pass', 'fail', 'not-submitted', 'permanent-highlight');
+                });
+                
+                updateStats();
+                updateChart();
+                saveToLocalStorage();
+                alert('所有成绩和考试名称已清空！系统已重置。');
+            }
+        }
+        
+        function toggleRanking() {
+            const rankingContainer = document.getElementById('rankingContainer');
+            if (rankingContainer.style.display === 'none') {
+                updateRanking();
+                rankingContainer.style.display = 'block';
+            } else {
+                rankingContainer.style.display = 'none';
+            }
+        }
+        
+        function updateRanking() {
+            const studentsWithScores = [];
+            for (let i = 1; i <= 51; i++) {
+                if (scores[i] !== undefined && scores[i] !== 'X' && !isNaN(parseFloat(scores[i]))) {
+                    studentsWithScores.push({
+                        id: i,
+                        name: studentData[i].name,
+                        score: parseFloat(scores[i])
+                    });
+                }
+            }
+            
+            if (studentsWithScores.length === 0) {
+                alert('暂无成绩数据，无法生成排行榜');
+                return;
+            }
+            
+            studentsWithScores.sort((a, b) => b.score - a.score);
+            
+            document.getElementById('rankingCount').textContent = studentsWithScores.length;
+            document.getElementById('rankingExamName').textContent = examName;
+            
+            const rankingBody = document.getElementById('rankingBody');
+            rankingBody.innerHTML = '';
+            
+            let currentRank = 1;
+            let prevScore = null;
+            let skipCount = 0;
+            
+            studentsWithScores.forEach((student, index) => {
+                const row = document.createElement('tr');
+                
+                if (prevScore === null) {
+                    currentRank = 1;
+                } else if (student.score === prevScore) {
+                    skipCount++;
+                    row.classList.add('same-rank');
+                } else {
+                    currentRank += skipCount + 1;
+                    skipCount = 0;
+                }
+                
+                prevScore = student.score;
+                
+                const rankCell = document.createElement('td');
+                rankCell.className = 'ranking-rank';
+                
+                if (currentRank === 1) {
+                    rankCell.innerHTML = '🥇🥇 第1名';
+                    rankCell.classList.add('medal-gold');
+                } else if (currentRank === 2) {
+                    rankCell.innerHTML = '🥈🥈 第2名';
+                    rankCell.classList.add('medal-silver');
+                } else if (currentRank === 3) {
+                    rankCell.innerHTML = '🥉🥉 第3名';
+                    rankCell.classList.add('medal-bronze');
+                } else {
+                    rankCell.textContent = `第${currentRank}名`;
+                }
+                
+                const nameCell = document.createElement('td');
+                nameCell.textContent = student.name;
+                
+                const idCell = document.createElement('td');
+                idCell.textContent = student.id;
+                
+                const scoreCell = document.createElement('td');
+                scoreCell.className = 'ranking-score';
+                scoreCell.textContent = student.score % 1 === 0 ? student.score : student.score.toFixed(1);
+                
+                if (student.score >= passScore) {
+                    scoreCell.classList.add('pass');
+                } else {
+                    scoreCell.classList.add('fail');
+                }
+                
+                const statusCell = document.createElement('td');
+                statusCell.textContent = student.score >= passScore ? '及格' : '不及格';
+                statusCell.style.color = student.score >= passScore ? '#4CAF50' : '#F44336';
+                statusCell.style.fontWeight = 'bold';
+                
+                row.appendChild(rankCell);
+                row.appendChild(nameCell);
+                row.appendChild(idCell);
+                row.appendChild(scoreCell);
+                row.appendChild(statusCell);
+                
+                rankingBody.appendChild(row);
+            });
+        }
+        
+        function updateStats() {
+            const scoreValues = Object.values(scores).filter(score => score !== 'X' && !isNaN(parseFloat(score)));
+            
+            if (scoreValues.length === 0) {
+                document.getElementById('avgScore').textContent = '0';
+                document.getElementById('maxScore').textContent = '0';
+                document.getElementById('minScore').textContent = '0';
+                document.getElementById('passRate').textContent = '0%';
+                return;
+            }
+            
+            const sum = scoreValues.reduce((a, b) => a + b, 0);
+            const avg = sum / scoreValues.length;
+            const max = Math.max(...scoreValues);
+            const min = Math.min(...scoreValues);
+            const passCount = scoreValues.filter(score => score >= passScore).length;
+            const passRate = (passCount / scoreValues.length) * 100;
+            
+            document.getElementById('avgScore').textContent = avg.toFixed(1);
+            document.getElementById('maxScore').textContent = max;
+            document.getElementById('minScore').textContent = min;
+document.getElementById('passRate').textContent = passRate.toFixed(1) + '%';
+        }
+        
+        function updateChart() {
+            const chart = document.getElementById('scoreChart');
+            chart.innerHTML = '';
+            
+            const ranges = [
+                { min: 0, max: 59, label: '0-59' },
+                { min: 60, max: 69, label: '60-69' },
+                { min: 70, max: 79, label: '70-79' },
+                { min: 80, max: 89, label: '80-89' },
+                { min: 90, max: 100, label: '90-100' }
+            ];
+            
+            const scoreValues = Object.values(scores).filter(score => score !== 'X' && !isNaN(parseFloat(score)));
+            const counts = ranges.map(range => {
+                return scoreValues.filter(score => score >= range.min && score <= range.max).length;
+            });
+            
+            const maxCount = Math.max(...counts);
+            
+            ranges.forEach((range, index) => {
+                const count = counts[index];
+                const height = maxCount > 0 ? (count / maxCount) * 100 : 0;
+                
+                const bar = document.createElement('div');
+                bar.className = 'chart-bar';
+                bar.style.height = `${height}%`;
+                bar.style.background = `hsl(${index * 60}, 70%, 50%)`;
+                
+                const valueLabel = document.createElement('div');
+                valueLabel.className = 'chart-bar-value';
+                valueLabel.textContent = count;
+                
+                const rangeLabel = document.createElement('div');
+                rangeLabel.className = 'chart-bar-label';
+                rangeLabel.textContent = range.label;
+                
+                bar.appendChild(valueLabel);
+                bar.appendChild(rangeLabel);
+                chart.appendChild(bar);
+            });
+        }
+        
+        function toggleStats() {
+            const statsPanel = document.getElementById('statsPanel');
+            statsPanel.style.display = statsPanel.style.display === 'none' ? 'grid' : 'none';
+        }
+        
+        function toggleChart() {
+            const chartContainer = document.getElementById('chartContainer');
+            chartContainer.style.display = chartContainer.style.display === 'none' ? 'block' : 'none';
+            if (chartContainer.style.display === 'block') {
+                updateChart();
+            }
+        }
+        
+        function toggleTheme() {
+            isDarkTheme = !isDarkTheme;
+            document.body.classList.toggle('dark-theme');
+            document.getElementById('themeToggle').textContent = isDarkTheme ? '☀☀ 亮色模式' : '🌙🌙 暗色模式';
+            saveToLocalStorage();
+        }
+        
+        function exportData() {
+            const data = {
+                scores: scores,
+                passScore: passScore,
+                examName: examName,
+                permanentHighlights: permanentHighlights,
+                isSpeechEnabled: isSpeechEnabled,
+                exportTime: new Date().toISOString()
+            };
+            const dataStr = JSON.stringify(data, null, 2);
+            const dataBlob = new Blob([dataStr], {type: 'application/json'});
+            
+            const url = URL.createObjectURL(dataBlob);
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = `${examName}成绩数据.json`;
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            URL.revokeObjectURL(url);
+            
+            alert(`"${examName}"数据导出成功！`);
+        }
+        
+        function showImportModal() {
+            document.getElementById('importModal').style.display = 'flex';
+        }
+        
+        function hideImportModal() {
+            document.getElementById('importModal').style.display = 'none';
+            document.getElementById('fileInput').value = '';
+        }
+        
+        function importData() {
+            const fileInput = document.getElementById('fileInput');
+            const file = fileInput.files[0];
+            
+            if (!file) {
+                alert('请选择要导入的文件');
+                return;
+            }
+            
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                try {
+                    const importedData = JSON.parse(e.target.result);
+                    
+                    if (typeof importedData !== 'object') {
+                        throw new Error('无效的数据格式');
+                    }
+                    
+                    scores = importedData.scores || {};
+                    
+                    if (importedData.passScore !== undefined) {
+                        passScore = importedData.passScore;
+                        document.getElementById('passScoreInput').value = passScore;
+                        updatePassScoreDisplay();
+                    }
+                    
+                    if (importedData.examName !== undefined) {
+                        examName = importedData.examName;
+                        document.getElementById('examNameDisplay').textContent = examName;
+                    }
+                    
+                    if (importedData.permanentHighlights !== undefined) {
+                        permanentHighlights = importedData.permanentHighlights;
+                    }
+                    
+                    if (importedData.isSpeechEnabled !== undefined) {
+                        isSpeechEnabled = importedData.isSpeechEnabled;
+                        document.getElementById('toggleSpeech').textContent = isSpeechEnabled ? '🔊 关闭朗读' : '🔈 开启朗读';
+                    }
+                    
+                    for (let i = 1; i <= 51; i++) {
+                        const scoreCell = document.querySelector(`.score[data-id="${i}"]`);
+                        if (scoreCell) {
+                            const score = scores[i] || '';
+                            scoreCell.textContent = score;
+                            
+                            scoreCell.classList.remove('pass', 'fail', 'not-submitted', 'permanent-highlight');
+                            if (score === 'X') {
+                                scoreCell.classList.add('not-submitted');
+                            } else if (score !== '') {
+                                const scoreValue = parseFloat(score);
+                                if (!isNaN(scoreValue)) {
+                                    scoreCell.classList.add(scoreValue >= passScore ? 'pass' : 'fail');
+                                }
+                            }
+                            
+                            if (permanentHighlights[i]) {
+                                scoreCell.classList.add('permanent-highlight');
+                            }
+                        }
+                    }
+                    
+                    updateStats();
+                    updateChart();
+                    saveToLocalStorage();
+                    
+                    alert('数据导入成功！');
+                    hideImportModal();
+                } catch (error) {
+                    alert('导入失败：文件格式不正确');
+                }
+            };
+            
+            reader.readAsText(file);
+        }
+        
+        function showBackupNotice() {
+            document.getElementById('backupNotice').style.display = 'block';
+        }
+        
+        function getNextEmptyStudent() {
+            for (let i = 1; i <= 51; i++) {
+                if (scores[i] === undefined) {
+                    return i;
+                }
+            }
+            return 1;
+        }
+        
+        function saveToLocalStorage() {
+            const data = {
+                scores: scores,
+                isDarkTheme: isDarkTheme,
+                passScore: passScore,
+                examName: examName,
+                permanentHighlights: permanentHighlights,
+                isSpeechEnabled: isSpeechEnabled,
+                lastUpdate: new Date().toISOString()
+            };
+            localStorage.setItem('class40Scores', JSON.stringify(data));
+        }
+        
+        function loadFromLocalStorage() {
+            const dataStr = localStorage.getItem('class40Scores');
+            if (dataStr) {
+                try {
+                    const data = JSON.parse(dataStr);
+                    scores = data.scores || {};
+                    isDarkTheme = data.isDarkTheme || false;
+                    passScore = data.passScore || 60;
+                    examName = data.examName || "未命名考试";
+                    permanentHighlights = data.permanentHighlights || {};
+                    isSpeechEnabled = data.isSpeechEnabled !== undefined ? data.isSpeechEnabled : true;
+                    
+                    if (isDarkTheme) {
+                        document.body.classList.add('dark-theme');
+                        document.getElementById('themeToggle').textContent = '☀☀ 亮色模式';
+                    }
+                    
+                    document.getElementById('passScoreInput').value = passScore;
+                    document.getElementById('examNameDisplay').textContent = examName;
+                    document.getElementById('toggleSpeech').textContent = isSpeechEnabled ? '🔊🔊 关闭朗读' : '🔈🔈 开启朗读';
+                    
+                    for (let i = 1; i <= 51; i++) {
+                        if (permanentHighlights[i]) {
+                            const scoreCell = document.querySelector(`.score[data-id="${i}"]`);
+                            if (scoreCell) {
+                                scoreCell.classList.add('permanent-highlight');
+                            }
+                        }
+                    }
+                } catch (e) {
+                    console.error('加载本地存储数据失败:', e);
+                }
+            }
+        }
+    </script>
+</body>
+</html>
