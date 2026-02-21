@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>张老师的工作台</title>
+    <style>
+        /* 全局样式 */
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { 
+            font-family: 'Segoe UI', 'Microsoft YaHei', sans-serif; 
+            background: linear-gradient(135deg, #f5f7fa 0%, #e4edf5 100%); 
+            min-height: 100vh;
+            padding: 40px 20px; 
+            color: #333;
+        }
+
+        /* 主容器 */
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+            overflow: hidden;
+            padding: 40px 30px;
+        }
+
+        /* 标题 */
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+            border-bottom: 1px solid #eee;
+            padding-bottom: 20px;
+        }
+        .header h1 {
+            font-size: 2.2em;
+            color: #2c3e50;
+            margin-bottom: 10px;
+        }
+        .header p {
+            color: #7f8c8d;
+            font-size: 1.1em;
+        }
+
+        /* 卡片网格 */
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+        }
+
+        /* 卡片样式 */
+        .card {
+            background: #f8f9fa;
+            padding: 25px 20px;
+            border-radius: 12px;
+            text-align: center;
+            transition: all 0.3s ease;
+            border: 1px solid #e0e0e0;
+        }
+        .card:hover {
+            background: #e3f2fd;
+            transform: translateY(-5px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+        }
+        .card a {
+            text-decoration: none;
+            color: #1565c0;
+            font-size: 1.1em;
+            font-weight: 500;
+        }
+
+        /* 页脚 */
+        .footer {
+            text-align: center;
+            margin-top: 40px;
+            padding-top: 20px;
+            border-top: 1px solid #eee;
+            color: #95a5a6;
+            font-size: 0.9em;
+        }
+        .footer .powered {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+            color: #7f8c8d;
+        }
+        .footer .domain {
+            display: block;
+            font-family: monospace;
+            font-size: 1.1em;
+            color: #2c3e50;
+            letter-spacing: 1px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Hi</h1>
+            <h1>😀</h1>
+            <p>请从下方选择需要使用的工具或页面</p>
+        </div>
+
+        <div class="grid">
+            <div class="card"><a href="tip.html">❓ 帮助和支持</a></div>
+            <div class="card"><a href="zygl.html">📚 作业管理</a></div>
+            <div class="card"><a href="123.html">📝 测试页面</a></div>
+            <div class="card"><a href="cjsf.html">📈 成绩上分【V2.0】</a></div>
+            <div class="card"><a href="https://www.baidu.com">🐻百度</a></div>
+            <div class="card"><a href="https://www.zxxk.com/">👨‍🏫学科网</a></div>
+            <div class="card"><a href="https://ttsmaker.cn/">🎵课文变成声</a></div>
+            <div class="card"><a href="https://zuoye.lulufind.com/">✏️每日交作业网页版</a></div>
+            <div class="card"><a href="https://chat.deepseek.com/">ℹ️DEEPSEEK AI</a></div>
+            <div class="card"><a href="https://www.qianwen.com/">🤖千问AI</a></div>
+            <div class="card"><a href="https://www.doubao.com/">🤖豆包AI</a></div>
+            <div class="card"><a href="https://www.example.com/">后续继续更新</a></div>
+        </div>
+
+        <div class="footer">
+            <span class="powered">Powered by Cloudflare Pages</span>
+            <span class="domain">teacher-zhang.pages.dev</span>
+            <span>CLOUDFLARE NET U.S.A.</span>
+        </div>
+    </div>
+</body>
+</html>
