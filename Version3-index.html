@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>张老师的工作台</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: "Microsoft YaHei", "Segoe UI", sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, #f8fafc 0%, #eef2ff 100%);
+            min-height: 100vh;
+            padding: 20px;
+            color: #1e293b;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+
+        /* 时间区域 */
+        .time-box {
+            text-align: center;
+            margin: 24px 0 36px;
+        }
+
+        #beijing-time {
+            font-size: 3.4rem;
+            font-weight: 800;
+            color: #3b82f6;
+            letter-spacing: 1px;
+            line-height: 1.2;
+        }
+
+        .time-label {
+            font-size: 1.1rem;
+            color: #64748b;
+            margin-top: 8px;
+        }
+
+        /* 标题 */
+        header {
+            text-align: center;
+            margin-bottom: 32px;
+        }
+
+        h1 {
+            font-size: 2.2rem;
+            font-weight: 700;
+            margin-bottom: 10px;
+        }
+
+        .subtitle {
+            font-size: 1rem;
+            color: #94a3b8;
+        }
+
+        /* 卡片网格 */
+        .cards-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+            gap: 20px;
+            margin-top: 16px;
+        }
+
+        .card {
+            background: white;
+            border-radius: 14px;
+            padding: 24px 16px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+            transition: all 0.25s ease;
+            text-decoration: none;
+            color: inherit;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+        }
+
+        .card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 6px 16px rgba(0, 0, 0, 0.1);
+        }
+
+        .card-icon {
+            font-size: 2rem;
+            margin-bottom: 12px;
+        }
+
+        .card-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            line-height: 1.4;
+        }
+
+        /* 底部 */
+        footer {
+            text-align: center;
+            margin-top: 40px;
+            padding-top: 20px;
+            color: #cbd5e1;
+            font-size: 0.85rem;
+            border-top: 1px solid #e2e8f0;
+        }
+
+        @media (max-width: 600px) {
+            .cards-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            #beijing-time {
+                font-size: 2.6rem;
+            }
+            h1 {
+                font-size: 1.8rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- 时间显示 -->
+        <div class="time-box">
+            <div class="time-label">北京时间</div>
+            <div id="beijing-time">--:--:--</div>
+        </div>
+
+        <!-- 标题 -->
+        <header>
+            <h1>张老师的工作台</h1>
+            <p class="subtitle">Hi 😀 请选择需要使用的工具</p>
+        </header>
+
+        <!-- 工具卡片（仅图标+标题） -->
+        <div class="cards-grid">
+            <a href="zygl.html" class="card">
+                <div class="card-icon">📚</div>
+                <div class="card-title">作业管理</div>
+            </a>
+            <a href="123.html" class="card">
+                <div class="card-icon">📝</div>
+                <div class="card-title">测试页面</div>
+            </a>
+            <a href="cjsf.html" class="card">
+                <div class="card-icon">📈</div>
+                <div class="card-title">成绩上分【V2.0】</div>
+            </a>
+            <a href="ourwebsite.jpg" class="card">
+                <div class="card-icon">🌍</div>
+                <div class="card-title">网站地址</div>
+            </a>
+            <a href="https://www.baidu.com" class="card" target="_blank">
+                <div class="card-icon">🐻</div>
+                <div class="card-title">百度</div>
+            </a>
+            <a href="https://www.zxxk.com/" class="card" target="_blank">
+                <div class="card-icon">👨‍🏫</div>
+                <div class="card-title">学科网</div>
+            </a>
+            <a href="https://ttsmaker.cn/" class="card" target="_blank">
+                <div class="card-icon">🎵</div>
+                <div class="card-title">课文变成声</div>
+            </a>
+            <a href="https://zuoye.lulufind.com/" class="card" target="_blank">
+                <div class="card-icon">✏️</div>
+                <div class="card-title">每日交作业网页版</div>
+            </a>
+            <a href="https://chat.deepseek.com/" class="card" target="_blank">
+                <div class="card-icon">ℹ️</div>
+                <div class="card-title">DEEPSEEK AI</div>
+            </a>
+            <a href="https://www.qianwen.com/" class="card" target="_blank">
+                <div class="card-icon">🤖</div>
+                <div class="card-title">千问AI</div>
+            </a>
+            <a href="https://www.doubao.com/" class="card" target="_blank">
+                <div class="card-icon">🤖</div>
+                <div class="card-title">豆包AI</div>
+            </a>
+            <a href="issues.html" class="card" target="_blank">
+                <div class="card-icon">🐧</div>
+                <div class="card-title">帮助、改进、支持、预览中心</div>
+            </a>
+            <a href="https://www.example.com/" class="card" target="_blank">
+                <div class="card-icon">🔄</div>
+                <div class="card-title">后续继续更新</div>
+            </a>
+        </div>
+
+        <footer>
+            <p>Powered by Cloudflare Pages • teacher-zhang.pages.dev</p>
+            <p>CLOUDFLARE NET U.S.A.</p>
+        </footer>
+    </div>
+
+    <script>
+        function updateBeijingTime() {
+            const now = new Date();
+            const beijingTime = new Date(now.toLocaleString("en-US", { timeZone: "Asia/Shanghai" }));
+            const hours = String(beijingTime.getHours()).padStart(2, '0');
+            const minutes = String(beijingTime.getMinutes()).padStart(2, '0');
+            const seconds = String(beijingTime.getSeconds()).padStart(2, '0');
+            document.getElementById('beijing-time').textContent = `${hours}:${minutes}:${seconds}`;
+        }
+        updateBeijingTime();
+        setInterval(updateBeijingTime, 1000);
+    </script>
+</body>
+</html>
