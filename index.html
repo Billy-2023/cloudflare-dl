@@ -3,11 +3,10 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
-    <title>张老师的工作台 | 2026 Ultimate</title>
-    <meta name="description" content="高效、智能、极简的教师专属工作台">
+    <title>张老师的工作台 | Worktable</title>
+    <meta name="description" content="Worktable">
     <style>
         :root {
-            /* 2026 配色方案：深邃蓝 + 霓虹紫 + 纯净白 */
             --bg-color: #f3f4f6;
             --primary: #2563eb;
             --primary-glow: rgba(37, 99, 235, 0.4);
@@ -24,10 +23,10 @@
             --glass-highlight: rgba(255, 255, 255, 0.9);
             
             --card-radius: 24px;
-            --transition: cubic-bezier(0.34, 1.56, 0.64, 1); /* 弹性动画 */
+            --transition: cubic-bezier(0.34, 1.56, 0.64, 1); 
         }
 
-        /* 深色模式自动适配 (可选) */
+
         @media (prefers-color-scheme: dark) {
             :root {
                 --bg-color: #0f172a;
@@ -44,7 +43,7 @@
         body {
             font-family: "PingFang SC", "SF Pro Display", "Microsoft YaHei", sans-serif;
             background-color: var(--bg-color);
-            /* 动态渐变背景 + 噪点纹理 */
+
             background-image: 
                 radial-gradient(at 0% 0%, rgba(37, 99, 235, 0.15) 0px, transparent 50%),
                 radial-gradient(at 100% 0%, rgba(124, 58, 237, 0.15) 0px, transparent 50%),
@@ -464,6 +463,10 @@
             <div class="icon-box">🐧</div>
             <div class="card-title">帮助与支持</div>
         </a>
+        <a href="myfiles.html" class="card type-local" data-category="local" data-tags="我的文件库">
+            <div class="icon-box">🗃️</div>
+            <div class="card-title">我的文件</div>
+        </a>
 
         <!-- 班级文档 -->
         <a href="44STUDENT-LIST.pdf" class="card type-doc" data-category="doc" data-tags="44班 名单 学生">
@@ -477,6 +480,12 @@
             <div class="icon-box">👥</div>
             <div class="card-title">40 班名单</div>
             <div class="card-meta">PDF 文档</div>
+        </a>
+        <a href="740kebiao.jpg" class="card type-doc" data-category="doc" data-tags="40班 名单 学生">
+            <div class="badge badge-ver">V3.0</div>
+            <div class="icon-box">📰</div>
+            <div class="card-title">40 班课程表</div>
+            <div class="card-meta">JPG 高清图片</div>
         </a>
         <a href="ourwebsite.jpg" class="card type-doc" data-category="doc" data-tags="网站 地址 图片">
             <div class="icon-box">🌍</div>
@@ -503,29 +512,29 @@
             <div class="badge badge-new">NEW</div>
             <div class="icon-box">ℹ️</div>
             <div class="card-title">DeepSeek AI</div>
-            <div class="card-meta">逻辑推理</div>
+            <div class="card-meta">逻辑推理【免费】</div>
         </a>
         <a href="https://www.qianwen.com/" class="card type-ai" data-category="ai" target="_blank" data-tags="千问 阿里 通用">
             <div class="icon-box">🤖</div>
-            <div class="card-title">通义千问</div>
+            <div class="card-title">通义千问【免费】</div>
         </a>
         <a href="https://www.doubao.com/" class="card type-ai" data-category="ai" target="_blank" data-tags="豆包 字节 语音">
             <div class="icon-box">🟢</div>
-            <div class="card-title">豆包 AI</div>
+            <div class="card-title">豆包 AI【免费】</div>
         </a>
         <a href="https://www.coze.cn/" class="card type-ai" data-category="ai" target="_blank" data-tags="coze 扣子 编排">
             <div class="icon-box">🧩</div>
             <div class="card-title">扣子 Coze</div>
-            <div class="card-meta">Agent 开发</div>
+            <div class="card-meta">Agent 开发【免费额度够用】</div>
         </a>
         <a href="https://www.kimi.com/zh/" class="card type-ai" data-category="ai" target="_blank" data-tags="kimi 长文本 月之暗面">
             <div class="icon-box">🌙</div>
             <div class="card-title">Kimi AI</div>
-            <div class="card-meta">长文档分析</div>
+            <div class="card-meta">长文档分析【免费基本够用】</div>
         </a>
         <a href="https://ttsmaker.cn/" class="card type-ai" data-category="ai" target="_blank" data-tags="tts 语音 课文">
             <div class="icon-box">🎵</div>
-            <div class="card-title">课文转语音</div>
+            <div class="card-title">课文转语音【免费共用】</div>
         </a>
          <a href="https://www.banana-pro.com/zh" class="card type-ai" data-category="ai" target="_blank" data-tags="banana 绘图">
             <div class="icon-box">🍌</div>
@@ -542,8 +551,6 @@
     <footer>
         <p>Powered by Cloudflare Pages • teacher-zhang.pages.dev</p>
         <div class="footer-links">
-            <a href="#">隐私政策</a> • 
-            <a href="#">使用条款</a> • 
             <a href="issues.html">反馈建议</a>
         </div>
         <p style="margin-top: 8px; font-size: 0.75rem; opacity: 0.6;">© 2026 张老师的工作台 | Designed for Efficiency</p>
@@ -563,13 +570,12 @@
         // 智能问候语
         const hour = now.getHours();
         const greetingEl = document.getElementById('smart-greeting');
-        let msg = "准备开始高效的一天吧";
-        if (hour >= 5 && hour < 9) msg = "早安！晨读时间到了吗？";
-        else if (hour >= 9 && hour < 12) msg = "上午好！专注备课中...";
-        else if (hour >= 12 && hour < 14) msg = "午休愉快，充充电再出发";
-        else if (hour >= 14 && hour < 18) msg = "下午好！批改作业辛苦了";
-        else if (hour >= 18 && hour < 22) msg = "晚上好，利用 AI 提升效率吧";
-        else msg = "夜深了，早点休息哦";
+        let msg = "开始";
+        if (hour >= 5 && hour < 9) msg = "早上好(つω`*)～☆";
+        else if (hour >= 9 && hour < 12) msg = "上午好";
+        else if (hour >= 12 && hour < 18) msg = "下午好！";
+        else if (hour >= 18 && hour < 21) msg = "晚上好！;
+        else msg = "早点休息";
         
         if(greetingEl.textContent !== msg) greetingEl.textContent = msg;
     }
@@ -584,9 +590,9 @@
         
         // 定义不同时间段的优先关键词
         let priorityKeywords = [];
-        if (hour >= 6 && hour <= 9) priorityKeywords = ['作业', '名单', '晨读']; // 早晨
-        else if (hour >= 14 && hour <= 17) priorityKeywords = ['成绩', '分析', '备课']; // 下午
-        else if (hour >= 19 && hour <= 23) priorityKeywords = ['AI', 'DeepSeek', 'Kimi', '扣子']; // 晚上备课/学习
+        if (hour >= 6 && hour <= 9) priorityKeywords = ['作业', '名单', 'AI']; // 早晨
+        else if (hour >= 14 && hour <= 17) priorityKeywords = ['成绩', '每日交作业', '备课']; // 下午
+        else if (hour >= 19 && hour <= 23) priorityKeywords = ['AI', 'DeepSeek', 'Kimi', '扣子']; // 晚上
 
         if (priorityKeywords.length > 0) {
             cards.sort((a, b) => {
