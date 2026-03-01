@@ -140,79 +140,33 @@
         }
 
         /* --- 智能控制区 --- */
+        /* --- 智能控制区 (修复遮挡) --- */
         .controls-area {
             position: sticky;
             top: 20px;
-            z-index: 100;
+            z-index: 50; /* 控制区本身需要高，以便吸顶 */
             margin-bottom: 30px;
             display: flex;
             flex-direction: column;
             align-items: center;
             gap: 16px;
+            /* 关键：只让内部元素响应点击，不要让它作为一个整体块遮挡下方 */
+            pointer-events: none; 
+        }
+
+        /* 让控制区内部的输入框和按钮重新允许点击 */
+        .controls-area > * {
+            pointer-events: auto;
         }
 
         .search-wrapper {
             position: relative;
             width: 100%;
             max-width: 600px;
-            group: search;
-        }
-
-        .search-input {
-            width: 100%;
-            padding: 18px 24px 18px 56px;
-            font-size: 1.1rem;
-            border-radius: 20px;
-            border: 1px solid var(--glass-border);
-            background: var(--glass-bg);
-            backdrop-filter: blur(24px);
-            -webkit-backdrop-filter: blur(24px);
-            color: var(--text-main);
-            box-shadow: var(--glass-shadow);
-            transition: all 0.3s var(--transition);
-        }
-
-        .search-input::placeholder { color: var(--text-sub); opacity: 0.7; }
-
-        .search-input:focus {
-            background: rgba(255, 255, 255, 0.85);
-            box-shadow: 0 12px 40px -4px var(--primary-glow);
-            border-color: var(--primary);
-            transform: translateY(-2px);
+            /* 确保搜索框不会溢出遮挡 */
+            z-index: 51; 
         }
         
-        @media (prefers-color-scheme: dark) {
-            .search-input:focus { background: rgba(30, 41, 59, 0.85); }
-        }
-
-        .search-icon {
-            position: absolute;
-            left: 20px;
-            top: 50%;
-            transform: translateY(-50%);
-            font-size: 1.4rem;
-            color: var(--text-sub);
-            pointer-events: none;
-            transition: color 0.3s;
-        }
-        
-        .search-input:focus + .search-icon { color: var(--primary); }
-
-        .shortcut-hint {
-            position: absolute;
-            right: 20px;
-            top: 50%;
-            transform: translateY(-50%);
-            font-size: 0.75rem;
-            background: rgba(128,128,128,0.15);
-            padding: 4px 8px;
-            border-radius: 6px;
-            color: var(--text-sub);
-            font-weight: 600;
-            border: 1px solid rgba(128,128,128,0.1);
-        }
-
-        /* 智能标签栏 */
         .smart-tabs {
             display: flex;
             gap: 10px;
@@ -223,6 +177,8 @@
             border-radius: 16px;
             border: 1px solid var(--glass-border);
             backdrop-filter: blur(12px);
+            z-index: 51;
+            position: relative;
         }
 
         .tab-btn {
@@ -254,14 +210,15 @@
         @media (prefers-color-scheme: dark) {
             .tab-btn.active { background: #fff; color: #000; }
         }
-
-        /* --- 网格布局 --- */
+        /* --- 网格布局 (修复层级) --- */
         .grid-container {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
             gap: 24px;
             padding-bottom: 40px;
-            contain: layout; /* 性能优化 */
+            contain: layout;
+            position: relative; /* 关键：建立局部坐标系 */
+            z-index: 1; /* 关键：确保在普通流中 */
         }
 
         .card {
@@ -277,13 +234,24 @@
             text-align: center;
             text-decoration: none;
             color: inherit;
-            position: relative;
+            position: relative; /* 关键：让 z-index 生效 */
+            z-index: 10; /* 关键：确保卡片层级高于背景和普通遮挡 */
             overflow: hidden;
             box-shadow: var(--glass-shadow);
             transition: all 0.4s var(--transition);
             cursor: pointer;
             contain: layout style;
+            /* 防止移动端误触高亮 */
+            -webkit-tap-highlight-color: transparent; 
         }
+
+        /* 悬停时层级更高，确保动画不被遮挡 */
+        .card:hover {
+            transform: translateY(-8px) scale(1.02);
+            box-shadow: 0 20px 40px -8px rgba(0,0,0,0.1);
+            border-color: rgba(255,255,255,1);
+            z-index: 20; /* 悬停时最高 */
+        }}
 
         /* 悬停特效：上浮 + 光晕 + 边框高亮 */
         .card:hover {
@@ -420,7 +388,7 @@
         </div>
         <h1>张老师的工作台</h1>
         <div class="greeting">
-            Hi, 张老师 <span id="smart-greeting">准备开始高效的一天吧</span>
+            Hi, 张老师 <span id="smart-greeting">Hi</span>
         </div>
     </header>
 
@@ -534,7 +502,8 @@
         </a>
         <a href="https://ttsmaker.cn/" class="card type-ai" data-category="ai" target="_blank" data-tags="tts 语音 课文">
             <div class="icon-box">🎵</div>
-            <div class="card-title">课文转语音【免费共用】</div>
+            <div class="card-title">课文转语音</div>
+            <div class="card-meta">长文档分析【免费够用】</div>
         </a>
          <a href="https://www.banana-pro.com/zh" class="card type-ai" data-category="ai" target="_blank" data-tags="banana 绘图">
             <div class="icon-box">🍌</div>
@@ -553,7 +522,7 @@
         <div class="footer-links">
             <a href="issues.html">反馈建议</a>
         </div>
-        <p style="margin-top: 8px; font-size: 0.75rem; opacity: 0.6;">© 2026 张老师的工作台 | Designed for Efficiency</p>
+        <p style="margin-top: 8px; font-size: 0.75rem; opacity: 0.6;">github.com/Billy-2023/cloudflare-dl</p>
     </footer>
 </div>
 
