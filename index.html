@@ -43,7 +43,6 @@
         body {
             font-family: "PingFang SC", "SF Pro Display", "Microsoft YaHei", sans-serif;
             background-color: var(--bg-color);
-
             background-image: 
                 radial-gradient(at 0% 0%, rgba(37, 99, 235, 0.15) 0px, transparent 50%),
                 radial-gradient(at 100% 0%, rgba(124, 58, 237, 0.15) 0px, transparent 50%),
@@ -139,22 +138,20 @@
             font-weight: 700;
         }
 
-        /* --- 智能控制区 --- */
         /* --- 智能控制区 (修复遮挡) --- */
         .controls-area {
             position: sticky;
             top: 20px;
-            z-index: 50; /* 控制区本身需要高，以便吸顶 */
+            z-index: 50;
             margin-bottom: 30px;
             display: flex;
             flex-direction: column;
             align-items: center;
             gap: 16px;
-            /* 关键：只让内部元素响应点击，不要让它作为一个整体块遮挡下方 */
-            pointer-events: none; 
+            pointer-events: none; /* 关键：让容器不阻挡点击 */
         }
 
-        /* 让控制区内部的输入框和按钮重新允许点击 */
+        /* 让控制区内部元素可点击 */
         .controls-area > * {
             pointer-events: auto;
         }
@@ -163,8 +160,63 @@
             position: relative;
             width: 100%;
             max-width: 600px;
-            /* 确保搜索框不会溢出遮挡 */
-            z-index: 51; 
+            z-index: 51;
+            pointer-events: auto;
+        }
+        
+        /* 搜索框样式 (修复缺失) */
+        .search-input {
+            width: 100%;
+            padding: 18px 24px 18px 56px;
+            font-size: 1.1rem;
+            border-radius: 20px;
+            border: 1px solid var(--glass-border);
+            background: var(--glass-bg);
+            backdrop-filter: blur(24px);
+            -webkit-backdrop-filter: blur(24px);
+            color: var(--text-main);
+            box-shadow: var(--glass-shadow);
+            transition: all 0.3s var(--transition);
+            font-family: inherit;
+        }
+        .search-input::placeholder { 
+            color: var(--text-sub); 
+            opacity: 0.7; 
+        }
+        .search-input:focus {
+            background: rgba(255, 255, 255, 0.85);
+            box-shadow: 0 12px 40px -4px var(--primary-glow);
+            border-color: var(--primary);
+            transform: translateY(-2px);
+            outline: none;
+        }
+        
+        .search-icon {
+            position: absolute;
+            left: 20px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-sub);
+            font-size: 1.2rem;
+            pointer-events: none;
+            transition: color 0.3s;
+        }
+        .search-input:focus + .search-icon { 
+            color: var(--primary); 
+        }
+        
+        .shortcut-hint {
+            position: absolute;
+            right: 16px;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 0.85rem;
+            color: var(--text-sub);
+            opacity: 0.7;
+            background: rgba(0,0,0,0.05);
+            padding: 2px 8px;
+            border-radius: 12px;
+            pointer-events: none;
         }
         
         .smart-tabs {
@@ -179,6 +231,7 @@
             backdrop-filter: blur(12px);
             z-index: 51;
             position: relative;
+            pointer-events: auto;
         }
 
         .tab-btn {
@@ -194,6 +247,7 @@
             display: flex;
             align-items: center;
             gap: 6px;
+            pointer-events: auto;
         }
 
         .tab-btn:hover {
@@ -210,6 +264,7 @@
         @media (prefers-color-scheme: dark) {
             .tab-btn.active { background: #fff; color: #000; }
         }
+        
         /* --- 网格布局 (修复层级) --- */
         .grid-container {
             display: grid;
@@ -217,8 +272,8 @@
             gap: 24px;
             padding-bottom: 40px;
             contain: layout;
-            position: relative; /* 关键：建立局部坐标系 */
-            z-index: 1; /* 关键：确保在普通流中 */
+            position: relative;
+            z-index: 1;
         }
 
         .card {
@@ -234,31 +289,22 @@
             text-align: center;
             text-decoration: none;
             color: inherit;
-            position: relative; /* 关键：让 z-index 生效 */
-            z-index: 10; /* 关键：确保卡片层级高于背景和普通遮挡 */
+            position: relative;
+            z-index: 10; /* 确保卡片在控制区下方但可点击 */
             overflow: hidden;
             box-shadow: var(--glass-shadow);
             transition: all 0.4s var(--transition);
             cursor: pointer;
             contain: layout style;
-            /* 防止移动端误触高亮 */
-            -webkit-tap-highlight-color: transparent; 
+            -webkit-tap-highlight-color: transparent;
         }
 
-        /* 悬停时层级更高，确保动画不被遮挡 */
+        /* 悬停特效：上浮 + 光晕 + 边框高亮 (合并重复定义) */
         .card:hover {
             transform: translateY(-8px) scale(1.02);
             box-shadow: 0 20px 40px -8px rgba(0,0,0,0.1);
             border-color: rgba(255,255,255,1);
-            z-index: 20; /* 悬停时最高 */
-        }}
-
-        /* 悬停特效：上浮 + 光晕 + 边框高亮 */
-        .card:hover {
-            transform: translateY(-8px) scale(1.02);
-            box-shadow: 0 20px 40px -8px rgba(0,0,0,0.1);
-            border-color: rgba(255,255,255,1);
-            z-index: 2;
+            z-index: 20; /* 悬停时最高层级 */
         }
         
         .card::after {
@@ -270,7 +316,9 @@
             transition: opacity 0.4s;
             pointer-events: none;
         }
-        .card:hover::after { opacity: 1; }
+        .card:hover::after { 
+            opacity: 1; 
+        }
 
         /* 图标容器 */
         .icon-box {
@@ -287,7 +335,9 @@
             z-index: 1;
         }
 
-        .card:hover .icon-box { transform: scale(1.15) rotate(-5deg); }
+        .card:hover .icon-box { 
+            transform: scale(1.15) rotate(-5deg); 
+        }
 
         /* 分类颜色 */
         .type-ai .icon-box { background: rgba(124, 58, 237, 0.1); color: var(--accent-ai); }
@@ -315,7 +365,7 @@
             z-index: 1;
         }
 
-        /* 徽章 */
+        /* 徽章 (修复点击穿透) */
         .badge {
             position: absolute;
             top: 12px;
@@ -327,6 +377,7 @@
             text-transform: uppercase;
             z-index: 2;
             box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            pointer-events: none; /* 关键：让点击穿透徽章 */
         }
         .badge-new { background: #ef4444; color: white; animation: pulse 2s infinite; }
         .badge-hot { background: #f59e0b; color: white; }
@@ -358,22 +409,55 @@
 
         /* 动画类 */
         .hidden { display: none !important; }
-        .fade-in-up { animation: fadeInUp 0.5s var(--transition) forwards; }
+        .fade-in-up { 
+            animation: fadeInUp 0.5s var(--transition) forwards; 
+        }
         
         @keyframes fadeInUp {
-            from { opacity: 0; transform: translateY(20px); }
-            to { opacity: 1; transform: translateY(0); }
+            from { 
+                opacity: 0; 
+                transform: translateY(20px); 
+            }
+            to { 
+                opacity: 1; 
+                transform: translateY(0); 
+            }
         }
 
         /* 移动端适配 */
         @media (max-width: 768px) {
-            .grid-container { grid-template-columns: repeat(2, 1fr); gap: 16px; }
-            .card { padding: 20px 16px; }
-            .icon-box { width: 52px; height: 52px; font-size: 1.6rem; margin-bottom: 12px; }
-            h1 { font-size: 2.2rem; }
-            .status-bar { flex-direction: column; gap: 4px; padding: 10px 20px; }
-            .date-display { border-left: none; padding-left: 0; }
-            .shortcut-hint { display: none; }
+            .grid-container { 
+                grid-template-columns: repeat(2, 1fr); 
+                gap: 16px; 
+            }
+            .card { 
+                padding: 20px 16px; 
+            }
+            .icon-box { 
+                width: 52px; 
+                height: 52px; 
+                font-size: 1.6rem; 
+                margin-bottom: 12px; 
+            }
+            h1 { 
+                font-size: 2.2rem; 
+            }
+            .status-bar { 
+                flex-direction: column; 
+                gap: 4px; 
+                padding: 10px 20px; 
+            }
+            .date-display { 
+                border-left: none; 
+                padding-left: 0; 
+            }
+            .shortcut-hint { 
+                display: none; 
+            }
+            .search-input {
+                padding: 16px 20px 16px 48px;
+                font-size: 1rem;
+            }
         }
     </style>
 </head>
@@ -543,7 +627,7 @@
         if (hour >= 5 && hour < 9) msg = "早上好(つω`*)～☆";
         else if (hour >= 9 && hour < 12) msg = "上午好";
         else if (hour >= 12 && hour < 18) msg = "下午好！";
-        else if (hour >= 18 && hour < 21) msg = "晚上好！;
+        else if (hour >= 18 && hour < 21) msg = "晚上好！"; // 修复：添加缺失的引号
         else msg = "早点休息";
         
         if(greetingEl.textContent !== msg) greetingEl.textContent = msg;
@@ -635,6 +719,23 @@
         }
     });
 
+    // --- 5. 确保卡片点击事件正常工作 ---
+    document.addEventListener('DOMContentLoaded', () => {
+        // 验证所有卡片是否可点击
+        document.querySelectorAll('.card').forEach(card => {
+            card.style.cursor = 'pointer';
+            // 添加点击反馈（可选）
+            card.addEventListener('mousedown', () => {
+                card.style.transform = 'scale(0.98)';
+            });
+            card.addEventListener('mouseup', () => {
+                card.style.transform = '';
+            });
+            card.addEventListener('mouseleave', () => {
+                card.style.transform = '';
+            });
+        });
+    });
 </script>
 </body>
 </html>
